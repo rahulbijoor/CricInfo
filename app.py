@@ -12,14 +12,14 @@ app = dash.Dash(__name__)
 app.title = "Cricket Analytics Dashboard"
 
 # Setup connection to DuckDB
-conn = duckdb.connect(database=':memory:', read_only=False)
+conn = duckdb.connect(database='my_local_database.duckdb', read_only=False)
 
 # Function to fetch and parse match data from the API
 def fetch_match_data():
     conn = http.client.HTTPSConnection("cricbuzz-cricket.p.rapidapi.com")
     
     headers = {
-        'x-rapidapi-key': os.getenv("RAPIDAPI_KEY"),
+        'x-rapidapi-key': os.getenv("RAPIDAPI_KEY2"),
         'x-rapidapi-host': "cricbuzz-cricket.p.rapidapi.com"
     }
 
@@ -183,7 +183,8 @@ conn.execute("""
         role STRING,
         batting_style STRING,
         bowling_style STRING,
-        substitute BOOLEAN
+        substitute BOOLEAN,
+        captain BOOLEAN
     )
 """)
 
@@ -191,7 +192,7 @@ conn.execute("""
 def fetch_player_data(match_id, team_id):
     http_conn = http.client.HTTPSConnection("cricbuzz-cricket.p.rapidapi.com")  # Renamed to `http_conn`
     headers = {
-        'x-rapidapi-key': os.getenv("RAPIDAPI_KEY"),
+        'x-rapidapi-key': os.getenv("RAPIDAPI_KEY2"),
         'x-rapidapi-host': "cricbuzz-cricket.p.rapidapi.com"
     }
     endpoint = f"/mcenter/v1/{match_id}/team/{team_id}"
@@ -222,7 +223,8 @@ def fetch_player_data(match_id, team_id):
                 "role": player['role'],
                 "batting_style": player.get('battingStyle', ''),
                 "bowling_style": player.get('bowlingStyle', ''),
-                "substitute": player.get('substitute', False)
+                "substitute": player.get('substitute', False),
+                "captain": player.get('captain', False)
             }
             for player in all_players
         ])
@@ -230,9 +232,9 @@ def fetch_player_data(match_id, team_id):
         # Insert into DuckDB
         for player in player_data.itertuples(index=False):
             conn.execute("""
-                INSERT INTO players (match_id, team_id, player_id, player_name, role, batting_style, bowling_style, substitute)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (player.match_id, player.team_id, player.player_id, player.player_name, player.role, player.batting_style, player.bowling_style, player.substitute))
+                INSERT INTO players (match_id, team_id, player_id, player_name, role, batting_style, bowling_style, substitute, captain)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (player.match_id, player.team_id, player.player_id, player.player_name, player.role, player.batting_style, player.bowling_style, player.substitute, player.captain))
         print(player_data)
         return player_data
 
@@ -252,11 +254,25 @@ def display_player_info(n_clicks, match_id):
             # Query DuckDB for players of both teams
             query = f"SELECT * FROM players WHERE match_id = {match_id}"
             player_data = conn.execute(query).fetchdf()
-
+            query_match = f"SELECT team1, team2 FROM matches WHERE match_id = {match_id}"
+            match_data = conn.execute(query_match).fetchdf()
+            
+            # Query to get team IDs for both teams
+            query_team_ids = f"""
+            SELECT teamId, teamName 
+            FROM teams 
+            WHERE teamName IN ('{match_data['team1'][0]}', '{match_data['team2'][0]}')
+            """
+            team_data = conn.execute(query_team_ids).fetchdf()
+            print(team_data)
+            # Fetch player data for both teams
+            team1_id = team_data[team_data['teamName'] == match_data['team1'][0]]['teamId'].values[0]
+            team2_id = team_data[team_data['teamName'] == match_data['team2'][0]]['teamId'].values[0]
+            
             if player_data.empty:
                 # Fetch from API if not in DuckDB
-                fetch_player_data(match_id, 1)  # For team 1
-                fetch_player_data(match_id, 2)  # For team 2
+                fetch_player_data(match_id, team1_id)  # For team 1
+                fetch_player_data(match_id, team2_id)  # For team 2
                 player_data = conn.execute(query).fetchdf()
 
             # Generate player info for display
@@ -269,7 +285,10 @@ def display_player_info(n_clicks, match_id):
 
                 player_info_divs.append(html.H3(f"Team {team_id} - Playing XI"))
                 player_info_divs.extend([
-                    html.P(f"{row['player_name']} - {row['role']} ({row['batting_style']} / {row['bowling_style']})")
+                    html.P(
+                        f"{row['player_name']} - {row['role']} {'(C)' if row['captain'] else ''} "
+                        f"({row['batting_style']} / {row['bowling_style']})"
+                    )
                     for _, row in playing_xi.iterrows()
                 ])
 
@@ -288,6 +307,7 @@ def display_player_info(n_clicks, match_id):
         return "Please select a match first."
 
     return "Player info will appear here after clicking the button."
+
 
 
 # Run the app
