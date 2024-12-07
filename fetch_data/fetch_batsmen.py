@@ -91,8 +91,7 @@ def store_batsmen_details(db_path):
         match_ids = con.execute("""
             SELECT DISTINCT im.match_id 
             FROM international_matches im
-            LEFT JOIN batsmen_details bd ON im.match_id = bd.match_id
-            WHERE bd.match_id IS NULL
+            
         """).fetchall()
         
         for (match_id,) in match_ids:

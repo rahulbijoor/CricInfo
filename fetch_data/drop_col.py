@@ -12,7 +12,7 @@ def drop_columns_from_match_details(db_path):
     
     try:
         # List of columns to drop
-        columns_to_drop = [
+        """columns_to_drop = [
             'match_description',
             'match_format', 
             'match_type', 
@@ -34,6 +34,35 @@ def drop_columns_from_match_details(db_path):
         result = con.execute("DESCRIBE match_details").fetchall()
         for column in result:
             print(column[0])
+        
+        con.execute('DROP TABLE IF EXISTS batsmen_details')
+        """
+        con.execute('''
+            CREATE TABLE batsmen_details (
+                match_id INTEGER,
+                innings_id INTEGER,
+                bat_team_id INTEGER,
+                bat_team_name VARCHAR,
+                bat_team_short_name VARCHAR,
+                batsman_id INTEGER,
+                batsman_name VARCHAR,
+                is_captain BOOLEAN,
+                is_keeper BOOLEAN,
+                runs INTEGER,
+                balls_faced INTEGER,
+                dots INTEGER,
+                fours INTEGER,
+                sixes INTEGER,
+                minutes INTEGER,
+                strike_rate FLOAT,
+                out_description VARCHAR,
+                bowler_id INTEGER,
+    fielder1_id INTEGER,
+    fielder2_id INTEGER,
+    fielder3_id INTEGER,
+    wicket_code VARCHAR
+)
+''')
     
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -44,7 +73,7 @@ def drop_columns_from_match_details(db_path):
 
 def main():
 
-    DB_PATH = 'cricket_matches.db'
+    DB_PATH = '\simple_regression\CricInfo\cricket_matches.db'
     
 
     drop_columns_from_match_details(DB_PATH)
