@@ -78,6 +78,20 @@ app.layout = html.Div([
             ]),
             html.Div(id="scorecard-output"),
             html.Div(id="partnership-output")
+        ]),
+        dcc.Tab(label="Match Summary", children=[
+            html.H2("Match Scorecard and Partnerships"),
+            html.Div([
+                html.Label("Select a Match:"),
+                dcc.Dropdown(
+                    id="match-dropdown",
+                    options=[
+                        {"label": f"{row['team1_name']} vs {row['team2_name']} ({row['match_desc']})", "value": row["match_id"]}
+                        for _, row in data_international_matches.iterrows()
+                    ],
+                )
+            ]),
+            html.Div(id="summary-output")
         ])
         
     ])
@@ -202,6 +216,110 @@ def update_match_details(match_id):
         ]))
 
     return scorecard_content, partnership_charts
+@app.callback(
+    [Output("summary-output", "children")],
+    [Input("match-dropdown", "value")]
+)
+def update_match_summary(match_id):
+    if not match_id:
+        return ["Please select a match"]
+
+    # Fetch match details by joining international_matches and match_details
+    match_details = load_data(f"""
+        SELECT 
+            im.team1_name, 
+            im.team2_name, 
+            im.match_desc, 
+            md.winning_team_name as winner_team, 
+            md.match_status as match_result, 
+            im.venue_ground || ', ' || im.venue_city as venue
+        FROM international_matches im
+        JOIN match_details md ON im.match_id = md.match_id
+        WHERE im.match_id = {match_id}
+    """)
+
+    # Fetch batsmen data
+    batsmen_data = load_data(f"""
+        SELECT 
+            innings_id, 
+            bat_team_name AS team_name, 
+            batsman_name, 
+            runs, 
+            balls_faced, 
+            strike_rate,
+            ROW_NUMBER() OVER (PARTITION BY innings_id ORDER BY runs DESC) as rank
+        FROM batsmen_details 
+        WHERE match_id = {match_id}
+    """)
+
+    # Fetch bowlers data
+    bowlers_data = load_data(f"""
+        SELECT 
+            innings_id, 
+            bowl_team_name AS team_name, 
+            bowler_name, 
+            wickets, 
+            runs_conceded, 
+            economy,
+            overs,
+            ROW_NUMBER() OVER (PARTITION BY innings_id ORDER BY wickets DESC, economy ASC) as rank
+        FROM bowlers_details 
+        WHERE match_id = {match_id}
+    """)
+
+    # Prepare summary content
+    summary_content = []
+
+    # Match Overview
+    if not match_details.empty:
+        match_info = match_details.iloc[0]
+        summary_content.extend([
+            html.H3("Match Overview"),
+            html.Div([
+                html.P(f"Match: {match_info['team1_name']} vs {match_info['team2_name']}"),
+                html.P(f"Match Type: {match_info['match_desc']}"),
+                html.P(f"Winner: {match_info['winner_team']}"),
+                html.P(f"Result: {match_info['match_result']}"),
+                html.P(f"Venue: {match_info['venue']}"),
+            ])
+        ])
+
+    # Top Performers for each innings
+    innings_list = batsmen_data['innings_id'].unique()
+    for innings_id in innings_list:
+        # Top 5 Batsmen
+        top_batsmen = batsmen_data[batsmen_data['innings_id'] == innings_id][batsmen_data['rank'] <= 5]
+        team_name = top_batsmen['team_name'].iloc[0] if not top_batsmen.empty else "Unknown Team"
+        
+        summary_content.append(html.H3(f"Innings {innings_id} Top Batsmen - {team_name}"))
+        summary_content.append(
+            dash_table.DataTable(
+                columns=[
+                    {"name": col.replace('_', ' ').capitalize(), "id": col}
+                    for col in ['batsman_name', 'runs', 'balls_faced', 'strike_rate']
+                ],
+                data=top_batsmen[['batsman_name', 'runs', 'balls_faced', 'strike_rate']].to_dict("records"),
+                style_table={'overflowX': 'auto'},
+            )
+        )
+
+        # Top 5 Bowlers
+        top_bowlers = bowlers_data[bowlers_data['innings_id'] == innings_id][bowlers_data['rank'] <= 5]
+        bowling_team_name = top_bowlers['team_name'].iloc[0] if not top_bowlers.empty else "Unknown Team"
+        
+        summary_content.append(html.H3(f"Innings {innings_id} Top Bowlers - {bowling_team_name}"))
+        summary_content.append(
+            dash_table.DataTable(
+                columns=[
+                    {"name": col.replace('_', ' ').capitalize(), "id": col}
+                    for col in ['bowler_name', 'wickets', 'runs_conceded', 'economy', 'overs']
+                ],
+                data=top_bowlers[['bowler_name', 'wickets', 'runs_conceded', 'economy', 'overs']].to_dict("records"),
+                style_table={'overflowX': 'auto'},
+            )
+        )
+
+    return [html.Div(summary_content)]
 
 # Run the app
 if __name__ == "__main__":
