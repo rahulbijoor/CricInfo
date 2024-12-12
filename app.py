@@ -1,5 +1,6 @@
 import dash
 from dash import dcc, html, Input, Output, dash_table
+import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import duckdb
 import plotly.express as px  # Required for consistent colors
@@ -84,7 +85,7 @@ app.layout = html.Div([
             html.Div([
                 html.Label("Select a Match:"),
                 dcc.Dropdown(
-                    id="match-dropdown",
+                    id="match2-dropdown",
                     options=[
                         {"label": f"{row['team1_name']} vs {row['team2_name']} ({row['match_desc']})", "value": row["match_id"]}
                         for _, row in data_international_matches.iterrows()
@@ -218,7 +219,7 @@ def update_match_details(match_id):
     return scorecard_content, partnership_charts
 @app.callback(
     [Output("summary-output", "children")],
-    [Input("match-dropdown", "value")]
+    [Input("match2-dropdown", "value")]
 )
 def update_match_summary(match_id):
     if not match_id:
@@ -274,18 +275,16 @@ def update_match_summary(match_id):
     if not match_details.empty:
         match_info = match_details.iloc[0]
         summary_content.extend([
-            html.H3("Match Overview"),
-            html.Div([
-                html.P(f"Match: {match_info['team1_name']} vs {match_info['team2_name']}"),
-                html.P(f"Match Type: {match_info['match_desc']}"),
-                html.P(f"Winner: {match_info['winner_team']}"),
-                html.P(f"Result: {match_info['match_result']}"),
-                html.P(f"Venue: {match_info['venue']}"),
+            dbc.Container([
+                create_match_overview(match_info)
             ])
         ])
 
     # Top Performers for each innings
-    innings_list = batsmen_data['innings_id'].unique()
+    innings_list = sorted(batsmen_data['innings_id'].unique())
+    if innings_list is None:
+        summary_content.append(html.P("No innings data found."))
+        return [html.Div(summary_content)]
     for innings_id in innings_list:
         # Top 5 Batsmen
         top_batsmen = batsmen_data[batsmen_data['innings_id'] == innings_id][batsmen_data['rank'] <= 5]
@@ -320,6 +319,136 @@ def update_match_summary(match_id):
         )
 
     return [html.Div(summary_content)]
+
+def create_match_overview(match_info):
+    """
+    Create a visually appealing match overview card using Dash and Bootstrap Components
+    
+    :param match_info: Dictionary containing match information
+    :return: Dash HTML component with styled match overview
+    """
+    return dbc.Card(
+        [
+            dbc.CardHeader(
+                html.H4(
+                    "Match Overview", 
+                    className="text-center text-white mb-0 font-weight-bold",
+                    style={
+                        'font-family': "'Roboto', sans-serif",
+                        'letter-spacing': '1px',
+                        'text-transform': 'uppercase'
+                    }
+                ),
+                className="bg-gradient-primary py-3 shadow-sm"
+            ),
+            dbc.CardBody([
+                dbc.Row([
+                    dbc.Col([
+                        html.H5(
+                            "Match Details", 
+                            className="text-primary mb-3",
+                            style={
+                                'font-weight': '600',
+                                'border-bottom': '2px solid #007bff',
+                                'padding-bottom': '10px'
+                            }
+                        ),
+                        dbc.ListGroup([
+                            dbc.ListGroupItem([
+                                html.Strong(
+                                    "Teams:", 
+                                    className="me-2 text-muted",
+                                    style={'font-size': '0.9rem'}
+                                ),
+                                html.Span(
+                                    f"{match_info['team1_name']} vs {match_info['team2_name']}", 
+                                    style={
+                                        'font-weight': '500',
+                                        'color': '#333'
+                                    }
+                                )
+                            ], className="d-flex justify-content-between align-items-center py-2"),
+                            dbc.ListGroupItem([
+                                html.Strong(
+                                    "Match Type:", 
+                                    className="me-2 text-muted",
+                                    style={'font-size': '0.9rem'}
+                                ),
+                                html.Span(
+                                    match_info['match_desc'],
+                                    style={
+                                        'font-weight': '500',
+                                        'color': '#333'
+                                    }
+                                )
+                            ], className="d-flex justify-content-between align-items-center py-2"),
+                        ], flush=True)
+                    ], md=6),
+                    dbc.Col([
+                        html.H5(
+                            "Result", 
+                            className="text-success mb-3",
+                            style={
+                                'font-weight': '600',
+                                'border-bottom': '2px solid #28a745',
+                                'padding-bottom': '10px'
+                            }
+                        ),
+                        dbc.ListGroup([
+                            dbc.ListGroupItem([
+                                html.Strong(
+                                    "Winner:", 
+                                    className="me-2 text-muted",
+                                    style={'font-size': '0.9rem'}
+                                ),
+                                html.Span(
+                                    match_info['winner_team'],
+                                    className="badge bg-success text-white",
+                                    style={
+                                        'font-size': '0.85rem',
+                                        'font-weight': '600',
+                                        'padding': '0.4rem 0.6rem'
+                                    }
+                                )
+                            ], className="d-flex justify-content-between align-items-center py-2"),
+                            dbc.ListGroupItem([
+                                html.Strong(
+                                    "Venue:", 
+                                    className="me-2 text-muted",
+                                    style={'font-size': '0.9rem'}
+                                ),
+                                html.Span(
+                                    match_info['venue'],
+                                    style={
+                                        'font-weight': '500',
+                                        'color': '#333'
+                                    }
+                                )
+                            ], className="d-flex justify-content-between align-items-center py-2"),
+                        ], flush=True)
+                    ], md=6),
+                ], className="g-3"),
+                html.Hr(className="my-4", style={'border-top': '2px solid #e9ecef'}),
+                dbc.Alert(
+                    match_info['match_result'],
+                    color="info",
+                    className="text-center font-weight-bold",
+                    style={
+                        'font-family': "'Times New Roman', sans-serif",
+                        'font-size': '2.5rem',
+                        'border-radius': '5px',
+                        'padding': '1rem'
+                    }
+                )
+            ], className="p-4")
+        ],
+        className="shadow-lg rounded-lg border-0 mb-4",
+        style={
+            'font-family': "'Roboto', sans-serif",
+            'max-width': '800px',
+            'margin': '0 auto'
+        }
+    )
 
 # Run the app
 if __name__ == "__main__":
