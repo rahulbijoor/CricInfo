@@ -3,6 +3,7 @@ from dash import dcc, html, Input, Output, dash_table
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import duckdb
+import pandas as pd
 import plotly.express as px  # Required for consistent colors
 
 # Initialize Dash app
@@ -16,53 +17,71 @@ def load_data(query):
 
 # Queries for data
 def get_international_matches():
-    return load_data("SELECT * FROM international_matches")
+    return load_data("SELECT * FROM international_matches m JOIN match_details md ON m.match_id = md.match_id")
 
-def get_team_wins():
-    return load_data("""
-        SELECT winning_team_name, COUNT(*) as wins
-        FROM match_details
-        WHERE is_complete = TRUE
-        GROUP BY winning_team_name
-        ORDER BY wins DESC
-    """)
+def get_team_wins(data_international_matches):
+    return data_international_matches.groupby('winning_team_name').size().reset_index(name='wins').sort_values('wins', ascending=False)
 
-def get_match_formats():
-    return load_data("""
-        SELECT match_format, COUNT(*) as count
-        FROM international_matches
-        GROUP BY match_format
-    """)
+def get_match_formats(data_international_matches):
+    return data_international_matches['match_format'].value_counts().reset_index(name='count')
 
-# Load static data
 data_international_matches = get_international_matches()
-data_team_wins = get_team_wins()
-data_match_formats = get_match_formats()
+data_team_wins = get_team_wins(data_international_matches)
+data_match_formats = get_match_formats(data_international_matches)
+
+try:
+    series_options = [{'label': series, 'value': series} 
+                      for series in data_international_matches['series_name'].unique() 
+                      if pd.notna(series)]
+    series_options.insert(0, {'label': 'All Series', 'value': 'All Series'})
+except Exception as e:
+    print(f"Error creating series options: {e}")
+    series_options = [{'label': 'All Series', 'value': 'All Series'}]
 
 # Layout
 app.layout = html.Div([
     dcc.Tabs([
         dcc.Tab(label="Overview", children=[
             html.H2("International Matches Overview"),
-            dash_table.DataTable(
-                id="international-matches-table",
-                columns=[{"name": col, "id": col} for col in data_international_matches.columns],
-                data=data_international_matches.to_dict("records"),
-                style_table={'overflowX': 'auto'},
-                page_size=10,
-                row_selectable="single"
-            ),
-            html.Div([
-                dcc.Graph(
-                    id="team-wins-bar",
-                    figure=px.bar(data_team_wins, x="winning_team_name", y="wins", title="Teams by Number of Wins")
+            dbc.Row([
+                dbc.Col([
+                    html.H4("Select Series"),
+                    dcc.Dropdown(
+                        id='series-dropdown',
+                        options=series_options,
+                        value='All Series',
+                        clearable=False
+                    )
+                ], width=6)
+            ], className="mb-4"),
+            dbc.Col([
+                html.H4("Match Details"),
+                dash_table.DataTable(
+                    id='match-table',
+                    columns=[
+                        {"name": "Match ID", "id": "match_id"},
+                        {"name": "Series", "id": "series_name"},
+                        {"name": "Match Description", "id": "match_desc"},
+                        {"name": "Team 1", "id": "team1_name"},
+                        {"name": "Team 2", "id": "team2_name"},
+                        {"name": "Status", "id": "status"}
+                    ],
+                    style_table={'overflowX': 'auto'},
+                    style_cell={'textAlign': 'left'},
+                    page_size=10
                 )
-            ]),
-            html.Div([
-                dcc.Graph(
-                    id="match-format-pie",
-                    figure=px.pie(data_match_formats, names="match_format", values="count", title="Match Formats")
-                )
+            ], width=12),
+
+            dbc.Row([
+                dbc.Col([
+                    html.H4("Teams by Number of Matches"),
+                    dcc.Graph(id='wins-bar-chart')
+                ], width=6),
+        
+                dbc.Col([
+                    html.H4("Match Formats Distribution"),
+                    dcc.Graph(id='format-pie-chart')
+                ], width=6)
             ])
         ]),
         dcc.Tab(label="Match Details", children=[
@@ -94,9 +113,85 @@ app.layout = html.Div([
             ]),
             html.Div(id="summary-output")
         ])
-        
     ])
 ])
+
+# Callback to update match table
+@app.callback(
+    Output('match-table', 'data'),
+    Input('series-dropdown', 'value')
+)
+def update_match_table(selected_series):
+    try:
+        if selected_series == 'All Series':
+            df_filtered = data_international_matches
+        else:
+            df_filtered = data_international_matches[data_international_matches['series_name'] == selected_series]
+        
+        # Select and rename columns for display
+        table_data = df_filtered[['match_id', 'series_name', 'match_desc', 'team1_name', 'team2_name', 'status']].to_dict('records')
+        return table_data
+    except Exception as e:
+        print(f"Error in update_match_table: {e}")
+        return []
+
+# Callback to update wins bar chart
+@app.callback(
+    Output('wins-bar-chart', 'figure'),
+    Input('series-dropdown', 'value')
+)
+def update_wins_chart(selected_series):
+    try:
+        if selected_series == 'All Series':
+            df_filtered = data_international_matches
+        else:
+            df_filtered = data_international_matches[data_international_matches['series_name'] == selected_series]
+        
+        # Count wins by team
+        wins_df = get_team_wins(df_filtered)
+        
+        fig = px.bar(
+            wins_df, 
+            x='winning_team_name', 
+            y='wins', 
+            title='Team Matches',
+            labels={'winning_team_name': 'Team', 'wins': 'Number of Wins'}
+        )
+        fig.update_yaxes(
+            tickmode='linear',  # Set tick mode to linear
+            tick0=0,            # Start ticks at 0
+            dtick=1             # Increment ticks by 1
+        )
+        return fig
+    except Exception as e:
+        print(f"Error in update_wins_chart: {e}")
+        return go.Figure()
+
+# Callback to update match formats pie chart
+@app.callback(
+    Output('format-pie-chart', 'figure'),
+    Input('series-dropdown', 'value')
+)
+def update_format_chart(selected_series):
+    try:
+        if selected_series == 'All Series':
+            df_filtered = data_international_matches
+        else:
+            df_filtered = data_international_matches[data_international_matches['series_name'] == selected_series]
+        
+        # Count match formats
+        format_df = get_match_formats(df_filtered)
+        
+        fig = px.pie(
+            format_df, 
+            values='count', 
+            names='match_format', 
+            title='Match Formats Distribution'
+        )
+        return fig
+    except Exception as e:
+        print(f"Error in update_format_chart: {e}")
+        return go.Figure()
 
 # Callbacks
 @app.callback(
