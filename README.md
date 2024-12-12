@@ -108,8 +108,8 @@ This section should list any major frameworks/libraries used to bootstrap your p
    pip install -r requirements.txt
    ```
 4. Enter your API in `.env`
-   ```sh
-  RAPIDAPI_KEY2 = 'ENTER YOUR API';
+   ```
+   RAPIDAPI_KEY2 = 'ENTER YOUR API';
    ```
 5. Run the app.py
    ```sh

@@ -38,9 +38,9 @@ except Exception as e:
     series_options = [{'label': 'All Series', 'value': 'All Series'}]
 
 # Layout
-app.layout = html.Div([
-    dcc.Tabs([
-        dcc.Tab(label="Overview", children=[
+app.layout = html.Div([ html.H1("StumpStats"),
+    dcc.Tabs([ 
+        dcc.Tab(label="Series Overview", children=[
             html.H2("Series Overview"),
             dbc.Row([
                 dbc.Col([
@@ -319,7 +319,7 @@ def update_match_details(match_id):
 )
 def update_match_summary(match_id):
     if not match_id:
-        return ["Please select a match"]
+        return [' ']
 
     # Fetch match details by joining international_matches and match_details
     match_details = load_data(f"""
@@ -452,7 +452,7 @@ def create_match_overview(match_info):
                         dbc.ListGroup([
                             dbc.ListGroupItem([
                                 html.Strong(
-                                    "Teams:", 
+                                    "Teams: ", 
                                     className="me-2 text-muted",
                                     style={'font-size': '0.9rem'}
                                 ),
@@ -466,7 +466,7 @@ def create_match_overview(match_info):
                             ], className="d-flex justify-content-between align-items-center py-2"),
                             dbc.ListGroupItem([
                                 html.Strong(
-                                    "Match Type:", 
+                                    "Match Type: ", 
                                     className="me-2 text-muted",
                                     style={'font-size': '0.9rem'}
                                 ),
@@ -493,23 +493,21 @@ def create_match_overview(match_info):
                         dbc.ListGroup([
                             dbc.ListGroupItem([
                                 html.Strong(
-                                    "Winner:", 
+                                    "Winner: ", 
                                     className="me-2 text-muted",
                                     style={'font-size': '0.9rem'}
                                 ),
                                 html.Span(
                                     match_info['winner_team'],
-                                    className="badge bg-success text-white",
                                     style={
-                                        'font-size': '0.85rem',
-                                        'font-weight': '600',
-                                        'padding': '0.4rem 0.6rem'
+                                        'font-weight': '500',
+                                        'color': '#333'
                                     }
                                 )
                             ], className="d-flex justify-content-between align-items-center py-2"),
                             dbc.ListGroupItem([
                                 html.Strong(
-                                    "Venue:", 
+                                    "Venue: ", 
                                     className="me-2 text-muted",
                                     style={'font-size': '0.9rem'}
                                 ),
