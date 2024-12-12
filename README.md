@@ -125,7 +125,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
   <p align="left"><a href="https://plotly.com/python/"> Documentation </a></p>
 
   <section>
-  <h2>Why Plotly for This Project?</h2>
+  <h3>Why Plotly for This Project?</h3>
   <p>
     In this Cricket Analytics Dashboard, <strong>Plotly</strong> is the chosen visualization library due to its powerful and versatile capabilities:
   </p>
