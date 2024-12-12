@@ -165,7 +165,8 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 
 
-1. Get a API Key at [RapidAPI](https://rapidapi.com/hub)
+1. Create an account in [RapidAPI](https://rapidapi.com/hub) and get the Cricbuzz API Key.
+
 2. Clone the repo
    ```sh
    git clone https://github.com/rahulbijoor/CricInfo.git
