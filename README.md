@@ -45,12 +45,6 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -73,6 +67,30 @@ This section should list any major frameworks/libraries used to bootstrap your p
   <h3 align="center">Duckdb</h3>
   <p> DuckDB is a high-performance, in-process SQL database management system designed specifically for analytical workloads. Often referred to as the "SQLite for Analytics," it is lightweight, easy to use, and optimized for working with structured data. Unlike traditional relational databases, DuckDB excels at running complex analytical queries directly on flat files or in-memory datasets without requiring a separate database server. Its columnar storage format and vectorized execution engine allow for fast data processing, making it an ideal choice for data science, machine learning. </p>
   <p align="left"><a href="https://duckdb.org/docs/guides/overview.html"> Documentation </a></p>
+  <section>
+  <h2>Why DuckDB for This Project?</h2>
+  <p>
+    In this Cricket Analytics Dashboard, <strong>DuckDB</strong> is the database engine of choice, and for good reason:
+  </p>
+  <ul>
+    <li><strong>Efficient Data Processing</strong>: DuckDB is optimized for analytical workloads, making it ideal for processing batting, bowling, and partnership statistics quickly and reliably.</li>
+    <li><strong>Seamless Multi-Dataset Handling</strong>: With support for querying multiple datasets (e.g., <code>batsmen_details</code>, <code>bowlers_details</code>) effortlessly, DuckDB requires minimal configuration compared to traditional databases.</li>
+    <li><strong>Real-Time Querying</strong>: DuckDB provides real-time query capabilities, allowing for dynamic exploration of match data without delays.</li>
+    <li><strong>Lightweight and Self-Contained</strong>: Unlike larger database systems, DuckDB doesn't require heavy infrastructure, making it easy to integrate and deploy for projects of any size.</li>
+  </ul>
+  <p>
+    By leveraging DuckDB, this project achieves:
+  </p>
+  <ul>
+    <li>High-speed querying of cricket data.</li>
+    <li>A lightweight setup that doesn’t compromise performance.</li>
+    <li>A smooth and interactive user experience for data exploration.</li>
+  </ul>
+  <p>
+    DuckDB’s simplicity and power ensure that the Cricket Analytics Dashboard remains fast, flexible, and user-friendly.
+  </p>
+</section>
+
 
   <h3 align="center">Dash</h3>
   <p> Dash is a powerful open-source Python framework for building interactive, data-driven web applications. Developed by Plotly, Dash is specifically designed for applications that involve data visualization, dashboards, and analytics, making it a popular choice for projects in data science and machine learning. </p>
