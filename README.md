@@ -119,6 +119,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
   </p>
 </section>
 
+
   <h3 align="center">Plotly</h3>
   <p>Plotly is a powerful, open-source data visualization library in Python that enables the creation of highly interactive and visually appealing charts and graphs. It's widely used for building dashboards, exploratory data analysis, and data storytelling. Plotly charts are dynamic, allowing users to zoom, pan, hover, and interact with data points for deeper exploration. It supports a variety of visualizations, including line charts, bar charts, scatter plots, heatmaps, 3D plots, and more. Plotly works seamlessly with popular Python frameworks like Dash, Jupyter notebooks, and web applications.</p>
   <p align="left"><a href="https://plotly.com/python/"> Documentation </a></p>
