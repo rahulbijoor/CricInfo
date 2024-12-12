@@ -62,7 +62,7 @@ This project aims to create an interactive and visually appealing Cricket Match 
 
 This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
-  <h3 align="center">Duckdb</h3>
+  <h1 align="left">Duckdb</h1>
   <p> DuckDB is a high-performance, in-process SQL database management system designed specifically for analytical workloads. Often referred to as the "SQLite for Analytics," it is lightweight, easy to use, and optimized for working with structured data. Unlike traditional relational databases, DuckDB excels at running complex analytical queries directly on flat files or in-memory datasets without requiring a separate database server. Its columnar storage format and vectorized execution engine allow for fast data processing, making it an ideal choice for data science, machine learning. </p>
   <p align="left"><a href="https://duckdb.org/docs/guides/overview.html"> Documentation </a></p>
   <section>
@@ -90,11 +90,11 @@ This section should list any major frameworks/libraries used to bootstrap your p
 </section>
 
 
-  <h3 align="center">Dash</h3>
+  <h1 align="left">Dash</h1>
   <p> Dash is a powerful open-source Python framework for building interactive, data-driven web applications. Developed by Plotly, Dash is specifically designed for applications that involve data visualization, dashboards, and analytics, making it a popular choice for projects in data science and machine learning. </p>
   <p align="left"><a href="https://dash.plotly.com/tutorial"> Documentation </a></p>
   <section>
-  <h2>Why Dash for This Project?</h2>
+  <h3>Why Dash for This Project?</h3>
   <p>
     In this Cricket Analytics Dashboard, <strong>Dash</strong> serves as the framework for building a highly interactive and visually appealing user interface. Here's why Dash is the ideal choice:
   </p>
@@ -120,7 +120,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 
 
-  <h3 align="center">Plotly</h3>
+  <h1 align="left">Plotly</h1>
   <p>Plotly is a powerful, open-source data visualization library in Python that enables the creation of highly interactive and visually appealing charts and graphs. It's widely used for building dashboards, exploratory data analysis, and data storytelling. Plotly charts are dynamic, allowing users to zoom, pan, hover, and interact with data points for deeper exploration. It supports a variety of visualizations, including line charts, bar charts, scatter plots, heatmaps, 3D plots, and more. Plotly works seamlessly with popular Python frameworks like Dash, Jupyter notebooks, and web applications.</p>
   <p align="left"><a href="https://plotly.com/python/"> Documentation </a></p>
 
