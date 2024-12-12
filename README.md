@@ -59,7 +59,6 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 This project aims to create an interactive and visually appealing Cricket Match Analytics Dashboard using Python, Dash, and Plotly. The dashboard provides users with detailed insights into cricket matches, showcasing batting and bowling scorecards, partnership contributions, and team performances in an intuitive format.
 
@@ -84,7 +83,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
   <p align="left"><a href="https://plotly.com/python/"> Documentation </a></p>
 
 
-* 
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -92,9 +91,11 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <!-- GETTING STARTED -->
 ## Getting Started
 
+## Prerequisites
+  Python 3.7 or higher is required. You can download it from [python.org](https://www.python.org/).
 
 
-### Installation
+### Setup
 
 
 
@@ -132,9 +133,9 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 
 <!-- ROADMAP -->
-## Roadmap
+## ScreenShots of the Application
 
-- [x] Add Changelog
+- Series Overview
 - [x] Add back to top links
 - [ ] Add Additional Templates w/ Examples
 - [ ] Add "components" document to easily copy & paste sections of the readme
