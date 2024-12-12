@@ -101,20 +101,19 @@ This section should list any major frameworks/libraries used to bootstrap your p
 1. Get a API Key at [RapidAPI](https://rapidapi.com/hub)
 2. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/rahulbijoor/CricInfo.git
    ```
-3. Install NPM packages
+3. Install the required packages
    ```sh
-   npm install
+   pip install -r requirements.txt
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
-5. Change git remote url to avoid accidental pushes to base project
+4. Enter your API in `.env`
    ```sh
-   git remote set-url origin github_username/repo_name
-   git remote -v # confirm the changes
+  RAPIDAPI_KEY2 = 'ENTER YOUR API';
+   ```
+5. Run the app.py
+   ```sh
+   python app.py
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
