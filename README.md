@@ -62,7 +62,7 @@ This project aims to create an interactive and visually appealing Cricket Match 
 
 This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
-  <h1 align="left">Duckdb</h1>
+  <h1 align="left">DuckDB</h1>
   <p> DuckDB is a high-performance, in-process SQL database management system designed specifically for analytical workloads. Often referred to as the "SQLite for Analytics," it is lightweight, easy to use, and optimized for working with structured data. Unlike traditional relational databases, DuckDB excels at running complex analytical queries directly on flat files or in-memory datasets without requiring a separate database server. Its columnar storage format and vectorized execution engine allow for fast data processing, making it an ideal choice for data science, machine learning. </p>
   <p align="left"><a href="https://duckdb.org/docs/guides/overview.html"> Documentation </a></p>
   <section>
