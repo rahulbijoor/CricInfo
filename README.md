@@ -75,14 +75,16 @@ This section should list any major frameworks/libraries used to bootstrap your p
   <p> DuckDB is a high-performance, in-process SQL database management system designed specifically for analytical workloads. Often referred to as the "SQLite for Analytics," it is lightweight, easy to use, and optimized for working with structured data. Unlike traditional relational databases, DuckDB excels at running complex analytical queries directly on flat files or in-memory datasets without requiring a separate database server. Its columnar storage format and vectorized execution engine allow for fast data processing, making it an ideal choice for data science, machine learning. </p>
   <p align="left"><a href="https://duckdb.org/docs/guides/overview.html"> Documentation </a></p>
 
+  <h3 align="center">Dash</h3>
+  <p> Dash is a powerful open-source Python framework for building interactive, data-driven web applications. Developed by Plotly, Dash is specifically designed for applications that involve data visualization, dashboards, and analytics, making it a popular choice for projects in data science and machine learning. </p>
+  <p align="left"><a href="https://dash.plotly.com/tutorial"> Documentation </a></p>
 
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+  <h3 align="center">Plotly</h3>
+  <p>Plotly is a powerful, open-source data visualization library in Python that enables the creation of highly interactive and visually appealing charts and graphs. It's widely used for building dashboards, exploratory data analysis, and data storytelling. Plotly charts are dynamic, allowing users to zoom, pan, hover, and interact with data points for deeper exploration. It supports a variety of visualizations, including line charts, bar charts, scatter plots, heatmaps, 3D plots, and more. Plotly works seamlessly with popular Python frameworks like Dash, Jupyter notebooks, and web applications.</p>
+  <p align="left"><a href="https://plotly.com/python/"> Documentation </a></p>
 
+
+* 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -90,22 +92,13 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
 
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
 
-1. Get a free API Key at [https://example.com](https://example.com)
+
+1. Get a API Key at [RapidAPI](https://rapidapi.com/hub)
 2. Clone the repo
    ```sh
    git clone https://github.com/github_username/repo_name.git
