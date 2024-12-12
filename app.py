@@ -4,13 +4,12 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import duckdb
 import pandas as pd
-import plotly.express as px  # Required for consistent colors
+import plotly.express as px  
 
-# Initialize Dash app
 app = dash.Dash(__name__)
 app.title = "Cricket Dashboard"
 
-# Load data from DuckDB
+
 def load_data(query):
     con = duckdb.connect('cricket_matches.db', read_only=True)
     return con.execute(query).df()
@@ -42,7 +41,7 @@ except Exception as e:
 app.layout = html.Div([
     dcc.Tabs([
         dcc.Tab(label="Overview", children=[
-            html.H2("International Matches Overview"),
+            html.H2("Series Overview"),
             dbc.Row([
                 dbc.Col([
                     html.H4("Select Series"),
@@ -54,23 +53,25 @@ app.layout = html.Div([
                     )
                 ], width=6)
             ], className="mb-4"),
-            dbc.Col([
-                html.H4("Match Details"),
-                dash_table.DataTable(
-                    id='match-table',
-                    columns=[
-                        {"name": "Match ID", "id": "match_id"},
-                        {"name": "Series", "id": "series_name"},
-                        {"name": "Match Description", "id": "match_desc"},
-                        {"name": "Team 1", "id": "team1_name"},
-                        {"name": "Team 2", "id": "team2_name"},
-                        {"name": "Status", "id": "status"}
-                    ],
-                    style_table={'overflowX': 'auto'},
-                    style_cell={'textAlign': 'left'},
-                    page_size=10
-                )
-            ], width=12),
+            dbc.Row([
+                dbc.Col([
+                    html.H4("Match Details"),
+                    dash_table.DataTable(
+                        id='match-table',
+                        columns=[
+                            {"name": "Match ID", "id": "match_id"},
+                            {"name": "Series", "id": "series_name"},
+                            {"name": "Match Description", "id": "match_desc"},
+                            {"name": "Team 1", "id": "team1_name"},
+                            {"name": "Team 2", "id": "team2_name"},
+                            {"name": "Status", "id": "status"}
+                        ],
+                        style_table={'overflowX': 'auto'},
+                        style_cell={'textAlign': 'left'},
+                        page_size=11
+                    )
+                ], width=12)
+                ]),
 
             dbc.Row([
                 dbc.Col([
@@ -100,7 +101,7 @@ app.layout = html.Div([
             html.Div(id="partnership-output")
         ]),
         dcc.Tab(label="Match Summary", children=[
-            html.H2("Match Scorecard and Partnerships"),
+            html.H2("Match Summary"),
             html.Div([
                 html.Label("Select a Match:"),
                 dcc.Dropdown(
